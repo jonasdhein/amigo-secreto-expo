@@ -5,6 +5,7 @@ import { Icon } from "../components/Icon";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IContact } from "../@types/contact";
 import { useState } from "react";
+import * as SMS from 'expo-sms';
 
 //com o expo-router, todas as telas precisam retornar DEFAULT
 export default function App() {
@@ -12,6 +13,13 @@ export default function App() {
     const [loading, setLoading] = useState(false);
     async function realizarSorteio() {
         try {
+
+            // const isAvailable = await SMS.isAvailableAsync();
+            // console.log("🚀 ~ realizarSorteio ~ isAvailable:", isAvailable)
+            // if (isAvailable) {
+            //     const { result } = await SMS.sendSMSAsync(['190', '3123123', '123123123'], 'mensagem');
+            //     console.log("🚀 ~ realizarSorteio ~ result:", result)
+            // }
 
             //busca a lista de contatos e armazena na variável jsonValue
             const jsonValue = await AsyncStorage.getItem('contacts_list');
