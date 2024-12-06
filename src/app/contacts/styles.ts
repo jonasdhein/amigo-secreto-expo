@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 import { colors } from "../../themes/global";
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
     item: {
         flex: 1,
         width: '100%',
@@ -34,3 +34,5 @@ export const styles = StyleSheet.create({
         alignItems: 'center'
     }
 });
+
+export default styles;

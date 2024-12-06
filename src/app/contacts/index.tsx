@@ -1,10 +1,11 @@
 import { Alert, FlatList, SafeAreaView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { colors, theme } from "../../themes/global";
-import { styles } from './styles'
 import { useEffect, useState } from "react";
 import { IContact } from "../../@types/contact";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Icon } from "../../components/Icon";
+
+import styles from './styles'
 
 //com o expo-router, todas as telas precisam retornar DEFAULT
 export default function Contacts() {
@@ -14,9 +15,16 @@ export default function Contacts() {
 
     const save = () => {
 
+        let maxId = 0;
+        contactsList.map(item => {
+            if (item.id > maxId) {
+                maxId = item.id;
+            }
+        })
+        
         const newList = [...contactsList,
         {
-            id: contactsList.length + 1,
+            id: maxId + 1,
             name: contact.name,
             number: contact.number
         }
@@ -47,6 +55,7 @@ export default function Contacts() {
 
             if (jsonValue != null) {
                 const parsed = JSON.parse(jsonValue);
+                console.log("🚀 ~ getData ~ parsed:", parsed)
                 return parsed;
             } else {
                 return [];
@@ -110,8 +119,10 @@ export default function Contacts() {
             <View style={styles.form}>
                 <TextInput
                     style={theme.input}
-                    onChangeText={(value) => setContact({ ...contact, 
-                        name: value })}
+                    onChangeText={(value) => setContact({
+                        ...contact,
+                        name: value
+                    })}
                     placeholder="Nome"
                     autoCapitalize="characters"
                     value={contact.name}
@@ -119,8 +130,10 @@ export default function Contacts() {
 
                 <TextInput
                     style={theme.input}
-                    onChangeText={(value) => setContact({ ...contact, 
-                        number: value })}
+                    onChangeText={(value) => setContact({
+                        ...contact,
+                        number: value
+                    })}
                     placeholder="Telefone"
                     value={contact.number}
                 />
