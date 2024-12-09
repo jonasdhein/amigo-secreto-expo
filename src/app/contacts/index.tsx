@@ -1,18 +1,18 @@
 import { Alert, FlatList, SafeAreaView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { colors, theme } from "../../themes/global";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { IContact } from "../../@types/contact";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Icon } from "../../components/Icon";
 
 import styles from './styles'
+import { AppContext } from "../../contexts/AppContext";
 
 //com o expo-router, todas as telas precisam retornar DEFAULT
 export default function Contacts() {
 
+    const { contactsList, storeData } = useContext(AppContext);
     const [contact, setContact] = useState<IContact>({} as IContact);
-    const [contactsList, setContactsList] = useState<IContact[]>([]);
-
+    
     const save = () => {
 
         let maxId = 0;
@@ -30,42 +30,12 @@ export default function Contacts() {
         }
         ];
 
-        setContactsList(newList);
         storeData(newList);
         setContact({
             name: '',
             number: ''
         } as IContact) //Limpar o objeto de contato utilizado
     }
-
-    const storeData = async (value: IContact[]) => {
-        try {
-            const jsonValue = JSON.stringify(value);
-            await AsyncStorage.setItem('contacts_list', jsonValue);
-        } catch (e) {
-            // saving error
-            console.log("🚀 ~ storeData ~ e:", e);
-        }
-    };
-
-    const getData = async (): Promise<IContact[]> => {
-        try {
-
-            const jsonValue = await AsyncStorage.getItem('contacts_list');
-
-            if (jsonValue != null) {
-                const parsed = JSON.parse(jsonValue);
-                console.log("🚀 ~ getData ~ parsed:", parsed)
-                return parsed;
-            } else {
-                return [];
-            }
-
-        } catch (e) {
-            console.error("Erro ao ler os dados:", e);
-            return [];
-        }
-    };
 
     const removeItem = (id: number) => {
         try {
@@ -82,7 +52,6 @@ export default function Contacts() {
 
                         const newList = contactsList.filter(item => item.id != id);
 
-                        setContactsList(newList);
                         storeData(newList);
                     }
                 }
@@ -91,17 +60,6 @@ export default function Contacts() {
             console.log("🚀 ~ removeItem ~ err:", err)
         }
     }
-
-    useEffect(() => {
-
-        const fetchData = async () => {
-            const fetch = await getData();
-            setContactsList(fetch);
-        }
-
-        fetchData();
-
-    }, []);
 
     const Item = ({ id, name, number }: IContact) => (
         <View style={styles.item}>
