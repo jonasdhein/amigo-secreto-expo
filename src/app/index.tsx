@@ -1,106 +1,89 @@
-import { ActivityIndicator, Alert, SafeAreaView, Text, TouchableOpacity, View } from "react-native";
-import { colors, theme } from "../themes/global";
-import { router } from "expo-router";
-import { Icon } from "../components/Icon";
-import { IContact } from "../@types/contact";
-import { useContext, useEffect, useState } from "react";
-import { AppContext } from "../contexts/AppContext";
+import React, { useEffect, useState } from 'react';
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { theme } from '../themes/global';
+import { IUser } from '../@types/user';
+import axios from 'axios';
+import { router } from 'expo-router';
+import * as LocalAuthentication from 'expo-local-authentication';
 
-//com o expo-router, todas as telas precisam retornar DEFAULT
-export default function App() {
+export default function login() {
 
-    const { contactsList, getContacts } = useContext(AppContext);
-    const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<IUser>({} as IUser);
 
-    async function realizarSorteio() {
-        try {
+  const handleLogin = async () => {
+    try {
 
-            let participantes: IContact[] = contactsList;
+      if (user.user && user.pass) {
 
-            if (participantes.length > 2) {
-                //cria um array de números para armazenar os IDs já sorteados
-                let sorteados: number[] = [];
+        const authInfo = btoa(`${user.user}:${user.pass}`);
 
-                let notSort: boolean;
-                //percorre a lista de contatos
-                for (let x = 0; x < participantes.length; x++) {
-
-                    notSort = true;
-
-                    while (notSort) {
-                        const random = parseInt((Math.random() * participantes.length).toString());
-                        /*verifica se o sorteado é diferente do participante em questão
-                        e o sorteado não pode estar na lista de contatos já sorteados */
-                        if (random != x && !sorteados.includes(random)) {
-                            participantes[x].idFriend = participantes[random].id;
-                            sorteados.push(random); //adiciona o n sorteado na lista de sorteados
-                            notSort = false;
-                        } else if (random === x && x === participantes.length - 1) {
-                            console.log("🚀 ~ o último pegou o último");
-                            participantes[x].idFriend = participantes[0].idFriend;
-                            participantes[0].idFriend = participantes[random].id;
-                            sorteados.push(random); //adiciona o n sorteado na lista de sorteados
-                            notSort = false;
-                        }
-                        console.log("🚀 ~ realizarSorteio ~ random:", random, sorteados);
-                    }
-                }
-
-                console.log('SORTEIO = ', participantes);
-                //o que fazer agora???
-
-            } else {
-                Alert.alert('Atenção', 'Número de participantes é insuficiente');
-            }
-
-            setLoading(false);
-
-        } catch (err) {
-            console.log("🚀 ~ realizarSorteio ~ err:", err);
-            setLoading(false);
+        //passar a autenticação
+        const options = {
+          headers: {
+            'Authorization': `Basic ${authInfo}`
+          }
         }
+
+        const { status } = await axios.get('/getUsersList', options);
+        if (status === 200) {
+          console.log('STATUS => ', status);
+          router.replace('home');
+        }
+
+      } else {
+        Alert.alert('Atenção', 'Informe usuário e senha');
+      }
+
+    } catch (err) {
+      console.log('ERR => ', err);
     }
+  }
 
-    useEffect(() => {
+  const getLocalAuth = async () => {
+    const result = LocalAuthentication.authenticateAsync();
+  }
 
-        getContacts();
+  useEffect(() => {
 
-    }, []);
+    getLocalAuth();
 
-    return (
-        <SafeAreaView style={theme.container}>
+  }, [])
 
-            {loading && <ActivityIndicator size="large" />}
+  return (
+    <View style={theme.container}>
 
-            <Text style={theme.title}>App Amigo Secreto</Text>
+      <View style={styles.form}>
+        <TextInput
+          style={theme.input}
+          placeholder='Usuário'
+          autoCapitalize='none'
+          value={user.user}
+          onChangeText={value => setUser({ ...user, user: value })}
+        />
 
-            <View style={theme.marginBottom}>
-                <Icon
-                    name="handshake-o"
-                    color={colors.primary}
-                    size={40} />
-            </View>
+        <TextInput
+          style={theme.input}
+          placeholder='Senha'
+          autoCapitalize='none'
+          secureTextEntry
+          value={user.pass}
+          onChangeText={value => setUser({ ...user, pass: value })}
+        />
 
-            <TouchableOpacity
-                onPress={() => router.navigate('contacts')}
-                style={[theme.button, theme.marginBottom]}>
-                <Text style={theme.textButton}>CONTATOS</Text>
-            </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => handleLogin()}>
+          <Text>LOGIN</Text>
+        </TouchableOpacity>
+      </View>
 
-            <TouchableOpacity
-                onPress={() => {
-                    setLoading(true);
-
-                    setTimeout(realizarSorteio, 1000);
-
-                    //const refInterval = setInterval(() => realizarSorteio(), 1000);
-                    //console.log("🚀 ~ App ~ refInterval:", refInterval)
-                    //clearInterval(refInterval);
-                }}
-                style={[theme.button, theme.marginBottom]}>
-                <Text style={theme.textButton}>REALIZAR SORTEIO</Text>
-            </TouchableOpacity>
-
-        </SafeAreaView >
-    )
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  form: {
+    width: '100%',
+    flexDirection: 'column',
+    paddingHorizontal: 16
+  }
+})

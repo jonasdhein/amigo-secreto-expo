@@ -1,0 +1,2 @@
+GET http://168.75.68.178:4000/getUsersList
+Authorization: Basic admin admin

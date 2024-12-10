@@ -8,7 +8,8 @@ export default function Layout() {
             <StatusBar style="auto" />
             <AppProvider>
                 <Stack>
-                    <Stack.Screen name="index" options={{ title: "Home" }} />
+                    <Stack.Screen name="index" options={{ title: "Login" }} />
+                    <Stack.Screen name="home/index" options={{ title: "Home" }} />
                     <Stack.Screen name="contacts/index" options={{ title: "Contatos" }} />
                 </Stack>
             </AppProvider>

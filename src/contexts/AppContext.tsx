@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useState } from "react";
 import { IContact } from "../@types/contact";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
 export interface IContext {
     contactsList: IContact[],
@@ -9,6 +10,7 @@ export interface IContext {
 }
 
 //* axios default pode ser colocado aqui
+axios.defaults.baseURL = 'http://168.75.68.178:4000';
 
 //é a exportacao utilizada nas telas onde se quer buscar algum dado do contexto
 export const AppContext = createContext<IContext>({} as IContext);

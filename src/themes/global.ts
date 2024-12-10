@@ -36,6 +36,7 @@ export const theme = StyleSheet.create({
         color: colors.primary
     },
     input: {
+        height: 44,
         backgroundColor: colors.backgroundInut,
         fontSize: 16,
         padding: 12,
