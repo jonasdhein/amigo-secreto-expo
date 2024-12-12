@@ -76,7 +76,7 @@ export default function Contacts() {
 
             <View style={styles.form}>
                 <TextInput
-                    style={theme.input}
+                    style={[theme.input, { width: '40%' }]}
                     onChangeText={(value) => setContact({
                         ...contact,
                         name: value
@@ -87,7 +87,7 @@ export default function Contacts() {
                 />
 
                 <TextInput
-                    style={theme.input}
+                    style={[theme.input, { width: '40%' }]}
                     onChangeText={(value) => setContact({
                         ...contact,
                         number: value

@@ -43,7 +43,6 @@ export const theme = StyleSheet.create({
         borderWidth: 0.5,
         borderColor: colors.placeHolder,
         borderRadius: 8,
-        flex: 0.4
     },
     marginL: {
         marginLeft: 8
